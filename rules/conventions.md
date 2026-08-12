@@ -40,11 +40,11 @@ The rule should be triggered when an identifier appears excessively ambiguous or
 
 Potential indicators include:
 
-Single-letter column names.
-Extremely short identifiers without an obvious conventional meaning.
-Generic abbreviations.
-Names such as data, value, info, item, or object when their meaning cannot be inferred.
-Identifiers whose meaning cannot reasonably be determined from the surrounding SQL.
+- Single-letter column names.
+- Extremely short identifiers without an obvious conventional meaning.
+- Generic abbreviations.
+- Names such as data, value, info, item, or object when their meaning cannot be inferred.
+- Identifiers whose meaning cannot reasonably be determined from the surrounding SQL.
 
 The rule should not assume that every short identifier is incorrect.
 
@@ -159,10 +159,10 @@ Prefer identifiers that describe the entity or purpose of the value.
 
 For example:
 
-id → customer_id
-name → customer_name
-status → order_status
-type → payment_type
+- id → customer_id
+- name → customer_name
+- status → order_status
+- type → payment_type
 
 ## Limitations
 
@@ -178,10 +178,10 @@ A SQL script may use multiple naming conventions for identifiers without an appa
 
 For example, a script may mix:
 
-customer_id
-customerName
-CustomerAddress
-customer-address
+- customer_id
+- customerName
+- CustomerAddress
+- customer-address
 
 This can make the schema or SQL code inconsistent and harder to maintain.
 
@@ -235,11 +235,11 @@ Use a consistent naming convention throughout the SQL input.
 
 For example, if snake_case is selected:
 
-customer_id
-customer_name
-customer_email
-created_at
-updated_at
+- customer_id
+- customer_name
+- customer_email
+- created_at
+- updated_at
 
 ## Limitations
 
@@ -296,18 +296,18 @@ Use short but meaningful aliases that identify the table's purpose.
 
 For example:
 
-customers → c
-orders → o
-products → p
+- customers → c
+- orders → o
+- products → p
 
 Avoid unnecessarily generic aliases such as:
 
-a
-b
-x
-y
-t1
-t2
+- a
+- b
+- x
+- y
+- t1
+- t2
 
 when the query complexity makes them difficult to understand.
 
@@ -338,10 +338,12 @@ Alias usage introduces unnecessary ambiguity.
 
 ## Examples
 
+```sql
 SELECT customers.name
 FROM customers c
 JOIN orders o
 ON customers.id = o.customer_id;
+```
 
 The query defines:
 
@@ -351,19 +353,21 @@ but later references the table using customers.
 
 A consistent version is:
 
+```sql
 SELECT c.name
 FROM customers c
 JOIN orders o
 ON c.id = o.customer_id;
+```
 
 ## Risk
 
 Inconsistent alias usage can:
 
-Reduce readability.
-Make complex queries harder to understand.
-Increase the possibility of reference errors.
-Make query maintenance more difficult.
+- Reduce readability.
+- Make complex queries harder to understand.
+- Increase the possibility of reference errors.
+- Make query maintenance more difficult.
 
 ## Recommendation
 
@@ -375,54 +379,64 @@ The exact syntax and alias requirements may vary between SQL engines.
 
 The rule should focus on clear inconsistency rather than enforcing a specific alias style.
 
-CONV-006 — Reserved Keyword Used as Identifier
-Description
+# CONV-006 — Reserved Keyword Used as Identifier
+
+## Description
 
 Using SQL reserved keywords as table or column names can reduce readability and may require quoting or escaping.
 
 For example:
 
+```sql
 CREATE TABLE order (
 id INT
 );
+```
 
 order is commonly associated with SQL syntax.
 
-Detection condition
+## Detection condition
 
 The rule should be triggered when an identifier appears to use a reserved SQL keyword and the SQL dialect provides sufficient information to determine that the identifier conflicts with the language syntax.
 
 Potential examples include:
 
-order
-user
-group
-select
-table
-where
-from
-Examples
+- order
+- user
+- group
+- select
+- table
+- where
+- from
+
+## Examples
 
 Potentially problematic:
 
+```sql
 CREATE TABLE order (
 id INT
 );
+```
 
 Prefer:
 
+```sql
 CREATE TABLE orders (
 order_id INT
 );
-Risk
+```
+
+## Risk
 
 Reserved keywords used as identifiers can:
 
-Reduce portability between database engines.
-Require quoting or escaping.
-Reduce readability.
-Cause syntax errors in some SQL dialects.
-Recommendation
+- Reduce portability between database engines.
+- Require quoting or escaping.
+- Reduce readability.
+- Cause syntax errors in some SQL dialects.
+
+## Recommendation
 
 Avoid using reserved keywords as identifiers when possible.
 
@@ -431,7 +445,8 @@ Prefer descriptive alternatives such as:
 order → orders
 user → users
 group → user_group
-Limitations
+
+## Limitations
 
 Reserved keywords differ between SQL engines and versions.
 
@@ -439,143 +454,168 @@ The rule should not classify an identifier as a confirmed violation unless the S
 
 When the SQL engine is unknown, the finding should be marked as potential.
 
-CONV-007 — Inconsistent Capitalization
-Description
+# CONV-007 — Inconsistent Capitalization
+
+## Description
 
 SQL code may use inconsistent capitalization for SQL keywords, functions, identifiers, or other elements.
 
 For example:
 
+```sql
 SELECT customer_id
 from customers
 WHERE status = 'active';
+```
 
 The SQL keywords use inconsistent capitalization.
 
-Detection condition
+## Detection condition
 
 The rule should be triggered when SQL keywords or other comparable elements use inconsistent capitalization within the same SQL input.
 
 Examples include:
 
+```sql
 SELECT
 from
 WHERE
 join
+```
 
 or:
 
+```sql
 SELECT
 FROM
 where
 JOIN
-Examples
+```
+
+## Examples
 
 Inconsistent:
 
+```sql
 SELECT customer_id
 from customers
 WHERE status = 'active';
+```
 
 Consistent:
 
+```sql
 SELECT customer_id
 FROM customers
 WHERE status = 'active';
-Risk
+```
+
+## Risk
 
 Inconsistent capitalization can:
 
-Reduce readability.
-Make code reviews less consistent.
-Make SQL scripts visually harder to scan.
-Reduce adherence to project coding standards.
-Recommendation
+- Reduce readability.
+- Make code reviews less consistent.
+- Make SQL scripts visually harder to scan.
+- Reduce adherence to project coding standards.
+
+## Recommendation
 
 Use a consistent capitalization convention.
 
 For example:
 
+```sql
 SELECT
 FROM
 WHERE
 JOIN
 GROUP BY
 ORDER BY
+```
 
 SQL keywords can conventionally be written in uppercase while identifiers remain lowercase.
 
-Exceptions
+## Exceptions
 
 The rule should not report capitalization differences when:
 
-The project explicitly defines another convention.
-The SQL input is intentionally formatted differently.
-Case differences are required by a particular SQL dialect or identifier behavior.
-CONV-008 — Unclear Naming Separation
-Description
+- The project explicitly defines another convention.
+- The SQL input is intentionally formatted differently.
+- Case differences are required by a particular SQL dialect or identifier behavior.
+
+# CONV-008 — Unclear Naming Separation
+
+## Description
 
 Identifiers may contain multiple semantic components without a clear naming convention.
 
 This can make it difficult to determine whether words represent an entity, attribute, relationship, or other concept.
 
-Detection condition
+## Detection condition
 
 The rule should be triggered when identifiers combine multiple concepts using unclear or inconsistent separators.
 
 Potential examples include:
 
-customerid
-customer_id
-customerId
-customer-id
-customerIDNumber
+- customerid
+- customer_id
+- customerId
+- customer-id
+- customerIDNumber
 
 when these forms are mixed within the same schema or script.
 
-Examples
+## Examples
 
 Inconsistent:
 
+```sql
 CREATE TABLE customers (
 customer_id INT,
 customerName VARCHAR(100),
 customer-email VARCHAR(200)
 );
+```
 
 Consistent:
 
+```sql
 CREATE TABLE customers (
 customer_id INT,
 customer_name VARCHAR(100),
 customer_email VARCHAR(200)
 );
-Risk
+```
+
+## Risk
 
 Unclear naming separation can:
 
-Reduce readability.
-Make identifiers harder to search.
-Make relationships between words difficult to understand.
-Create inconsistent schema conventions.
-Recommendation
+- Reduce readability.
+- Make identifiers harder to search.
+- Make relationships between words difficult to understand.
+- Create inconsistent schema conventions.
+
+## Recommendation
 
 Use a consistent separator and naming style throughout the SQL input.
 
 For example:
 
-customer_id
-customer_name
-customer_email
-created_at
-updated_at
-Limitations
+- customer_id
+- customer_name
+- customer_email
+- created_at
+- updated_at
+
+## Limitations
 
 The rule should not assume that one naming style is universally correct.
 
 The appropriate convention depends on the project's standards, SQL engine, and existing schema.
 
-Convention Rule Priority
+# Convention Rule Priority
 
 Convention rules should generally have lower priority than security and data-integrity rules.
 
@@ -598,22 +638,22 @@ INFO
 
 Convention rules should not automatically receive HIGH or CRITICAL severity simply because a naming convention is violated.
 
-Convention Review Principles
+# Convention Review Principles
 
 The convention reviewer should follow these principles:
 
-Do not assume an organizational naming convention unless one is provided.
-Do not treat stylistic preferences as functional errors.
-Prefer consistency over a specific naming style.
-Use the surrounding SQL as context before reporting ambiguous names.
-Do not report a naming issue when the available context reasonably explains the identifier.
-Distinguish between confirmed inconsistencies and potential recommendations.
-Do not duplicate findings that belong to security or performance rules.
-Do not infer business meaning that is not present in the SQL.
-When the SQL dialect is unknown, avoid confirming dialect-specific naming violations.
-Prioritize findings that materially affect readability and maintainability.
-Avoid excessive stylistic findings that provide little practical value.
-A query can be functionally correct while still containing convention findings.
-The absence of convention findings does not mean that the SQL follows an organization's coding standard.
-Recommendations should be actionable and, when appropriate, include an improved example.
-The reviewer should preserve the distinction between CONFIRMED, POTENTIAL, and insufficient-context findings.
+1. Do not assume an organizational naming convention unless one is provided.
+2. Do not treat stylistic preferences as functional errors.
+3. Prefer consistency over a specific naming style.
+4. Use the surrounding SQL as context before reporting ambiguous names.
+5. Do not report a naming issue when the available context reasonably explains the identifier.
+6. Distinguish between confirmed inconsistencies and potential recommendations.
+7. Do not duplicate findings that belong to security or performance rules.
+8. Do not infer business meaning that is not present in the SQL.
+9. When the SQL dialect is unknown, avoid confirming dialect-specific naming violations.
+10. Prioritize findings that materially affect readability and maintainability.
+11. Avoid excessive stylistic findings that provide little practical value.
+12. A query can be functionally correct while still containing convention findings.
+13. The absence of convention findings does not mean that the SQL follows an organization's coding standard.
+14. Recommendations should be actionable and, when appropriate, include an improved example.
+15. The reviewer should preserve the distinction between CONFIRMED, POTENTIAL, and insufficient-context findings.
